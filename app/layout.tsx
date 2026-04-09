@@ -1,13 +1,12 @@
 import "./globals.css";
-import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "GenLayer AI Chatbot",
-  description: "Ask anything about GenLayer"
+export const metadata = {
+  title: "GenLayer Chatbot",
+  description: "Free GenLayer chatbot",
 };
 
 export default function RootLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
