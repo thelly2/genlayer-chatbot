@@ -1,8 +1,6 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+export const dynamic = "force-dynamic";
 
 const SYSTEM_PROMPT = `
 You are a helpful GenLayer AI assistant.
@@ -25,8 +23,22 @@ Rules:
 
 export async function POST(req: Request) {
   try {
+    const apiKey = process.env.OPENAI_API_KEY;
+
+    if (!apiKey) {
+      return Response.json(
+        {
+          reply:
+            "OPENAI_API_KEY is missing. Please add it in your Vercel Environment Variables."
+        },
+        { status: 500 }
+      );
+    }
+
     const body = await req.json();
     const messages = body.messages || [];
+
+    const openai = new OpenAI({ apiKey });
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -38,12 +50,13 @@ export async function POST(req: Request) {
     });
 
     const reply =
-      completion.choices[0]?.message?.content ||
+      completion.choices?.[0]?.message?.content ||
       "Please check the official GenLayer docs here: https://docs.genlayer.com";
 
     return Response.json({ reply });
   } catch (error) {
     console.error("Chat API error:", error);
+
     return Response.json(
       {
         reply:
